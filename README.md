@@ -1,59 +1,260 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# HR Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API built with Laravel for managing employees, positions, salary changes, and managerial hierarchies.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.2+
+- Composer
+- MySQL
+- Laravel 11
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Clone the repository
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone https://github.com/your-username/hr-management-api.git
+cd hr-management-api
+```
 
-## Laravel Sponsors
+### 2. Install dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+```
 
-### Premium Partners
+### 3. Copy environment file
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+cp .env.example .env
+```
 
-## Contributing
+### 4. Generate application key
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan key:generate
+```
 
-## Code of Conduct
+### 5. Configure your database
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open `.env` and update these values:
 
-## Security Vulnerabilities
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=db_hr_management
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Create the database in phpMyAdmin or via terminal:
+
+```sql
+CREATE DATABASE db_hr_management;
+```
+
+### 6. Run migrations
+
+```bash
+php artisan migrate
+```
+
+### 7. Configure mail (for email notifications)
+
+For local development, emails are logged to `storage/logs/laravel.log`:
+
+```env
+MAIL_MAILER=log
+```
+
+For production, update with your real SMTP credentials:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_FROM_ADDRESS=hr@company.com
+MAIL_FROM_NAME="HR Management"
+```
+
+### 8. Configure broadcasting (for real-time salary notifications)
+
+For local development:
+
+```env
+BROADCAST_DRIVER=log
+```
+
+For production with Pusher:
+
+```env
+BROADCAST_DRIVER=pusher
+PUSHER_APP_ID=your_app_id
+PUSHER_APP_KEY=your_app_key
+PUSHER_APP_SECRET=your_app_secret
+PUSHER_APP_CLUSTER=mt1
+```
+
+### 9. Seed fake data (optional)
+
+```bash
+php artisan employees:insert 20
+```
+
+### 10. Start the server
+
+```bash
+php artisan serve
+```
+
+The API will be available at `http://127.0.0.1:8000`
+
+---
+
+## Running Tests
+
+```bash
+php artisan test
+```
+
+---
+
+## API Endpoints
+
+All protected endpoints require:
+```
+Authorization: Bearer YOUR_TOKEN
+```
+
+### Authentication
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/register` | Register a new user |
+| POST | `/api/v1/login` | Login and get token |
+| POST | `/api/v1/logout` | Logout (revoke token) |
+
+### Employees
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/employees` | List all employees (paginated) |
+| POST | `/api/v1/employees` | Create a new employee |
+| GET | `/api/v1/employees/{id}` | Get a single employee |
+| PUT | `/api/v1/employees/{id}` | Update an employee |
+| DELETE | `/api/v1/employees/{id}` | Soft delete an employee |
+| GET | `/api/v1/employees/search?name=&salary=` | Search employees |
+| GET | `/api/v1/employees/{id}/hierarchy` | Get manager hierarchy (names) |
+| GET | `/api/v1/employees/{id}/hierarchy-with-salary` | Get manager hierarchy (names + salaries) |
+| GET | `/api/v1/employees/{id}/logs` | Get employee activity logs |
+| GET | `/api/v1/employees/export/csv` | Export all employees to CSV |
+| POST | `/api/v1/employees/import/csv` | Import employees from CSV |
+| GET | `/api/v1/employees/no-salary-change/{months}` | Employees without salary change in X months |
+
+### Positions
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/positions` | List all positions |
+| POST | `/api/v1/positions` | Create a position |
+| GET | `/api/v1/positions/{id}` | Get a single position |
+| PUT | `/api/v1/positions/{id}` | Update a position |
+| DELETE | `/api/v1/positions/{id}` | Delete a position |
+
+---
+
+## Artisan Commands
+
+| Command | Description |
+|---------|-------------|
+| `php artisan logs:delete-old` | Delete employee logs older than 1 month |
+| `php artisan logs:remove-files` | Remove all log files from storage/logs |
+| `php artisan employees:insert {count}` | Insert fake employees with progress bar |
+| `php artisan db:export-sql` | Export entire database to a SQL file |
+| `php artisan employees:export-json` | Export all employees to a JSON file |
+
+---
+
+## Key Features
+
+- **Token-based authentication** using Laravel Sanctum
+- **Single founder rule** — only one founder allowed per company
+- **Manager hierarchy** — every employee (except founder) must have a manager
+- **Email notifications** — manager notified when a new employee is added to their team
+- **Salary change notifications** — employee and all managers up to founder are notified by email and real-time broadcast
+- **CSV import/export** — bulk import and export employee data
+- **Database logging** — every operation on employee data is saved to the `employee_logs` table
+- **File logging** — storage operations are saved to `storage/logs/employee.log`
+- **Rate limiting** — maximum 10 requests per minute per user
+- **Soft deletes** — deleted employees are not permanently removed
+
+---
+
+## Project Structure
+
+```
+app/
+├── Console/Commands/       # Artisan commands
+├── Events/                 # SalaryChanged event
+├── Http/
+│   ├── Controllers/Api/V1/ # API controllers
+│   └── Requests/           # Form request validation
+├── Listeners/              # Event listeners
+├── Mail/                   # Mailables
+├── Models/                 # Eloquent models
+├── Providers/              # AppServiceProvider
+└── Services/               # Business logic (optional)
+
+database/
+├── migrations/             # Database migrations
+
+resources/views/emails/     # Email blade templates
+
+routes/
+└── api.php                 # API routes
+
+storage/logs/
+├── laravel.log             # Application logs
+└── employee.log            # Employee storage logs
+
+tests/Feature/              # Feature tests
+```
+
+---
+
+## Database Structure
+
+```
+users
+employees         (self-referencing: manager_id → employees.id)
+positions
+employee_logs
+salary_histories
+```
+
+---
+
+## Rate Limiting
+
+All API endpoints are limited to **10 requests per minute** per authenticated user.
+Exceeding the limit returns:
+
+```json
+{
+    "message": "Too many requests. Please slow down."
+}
+```
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
